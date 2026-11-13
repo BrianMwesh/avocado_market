@@ -1,0 +1,75 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Dashboard{% endblock %}
+{% block admin_heading %}Dashboard{% endblock %}
+{% block admin_actions %}
+  <div class="row-actions">
+    <a class="solid-btn small" href="{{ url_for('admin_quote_new') }}">New quote</a>
+    <a class="solid-btn small" href="{{ url_for('admin_invoice_new') }}">New invoice</a>
+    <a class="ghost-btn small" href="{{ url_for('admin_product_new') }}">Add product</a>
+  </div>
+{% endblock %}
+
+{% block admin_content %}
+<div class="stat-row">
+  <div class="stat"><span class="stat-label">Products live</span><strong>{{ stats.products }}</strong></div>
+  <div class="stat"><span class="stat-label">Registered buyers</span><strong>{{ stats.customers }}</strong></div>
+  <div class="stat"><span class="stat-label">Quotes</span><strong>{{ stats.quotes }}</strong>
+    <small class="muted">{{ stats.open_quotes }} open</small></div>
+  <div class="stat"><span class="stat-label">Invoices</span><strong>{{ stats.invoices }}</strong>
+    <small class="muted">{{ stats.unpaid }} unpaid</small></div>
+  <div class="stat"><span class="stat-label">Outstanding</span>
+    <strong class="money">{{ stats.unpaid_value|money }}</strong></div>
+  <div class="stat"><span class="stat-label">Paid to date</span>
+    <strong class="money">{{ stats.revenue|money }}</strong></div>
+</div>
+
+<div class="panel">
+  <div class="panel-head"><h2>Recent quotes</h2><a class="link-btn" href="{{ url_for('admin_quotes') }}">All quotes</a></div>
+  {% if recent_quotes %}
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>Quote</th><th>Buyer</th><th>Date</th><th class="num">Total</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          {% for q in recent_quotes %}
+            <tr>
+              <td><strong>{{ q['quote_no'] }}</strong></td>
+              <td>{{ q['full_name'] }}{% if q['company'] %}<br><span class="muted small">{{ q['company'] }}</span>{% endif %}</td>
+              <td>{{ q['created_at']|nice_date }}</td>
+              <td class="num money">{{ q['total']|money }}</td>
+              <td><span class="pill pill-{{ q['status'] }}">{{ q['status']|capitalize }}</span></td>
+              <td class="right"><a class="link-btn" href="{{ url_for('admin_quote_view', quote_id=q['id']) }}">Open</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="empty">No quotes yet. <a href="{{ url_for('admin_quote_new') }}">Create the first one</a>.</p>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <div class="panel-head"><h2>Recent invoices</h2><a class="link-btn" href="{{ url_for('admin_invoices') }}">All invoices</a></div>
+  {% if recent_invoices %}
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>Invoice</th><th>Buyer</th><th>Date</th><th class="num">Total</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          {% for i in recent_invoices %}
+            <tr>
+              <td><strong>{{ i['invoice_no'] }}</strong></td>
+              <td>{{ i['full_name'] }}{% if i['company'] %}<br><span class="muted small">{{ i['company'] }}</span>{% endif %}</td>
+              <td>{{ i['created_at']|nice_date }}</td>
+              <td class="num money">{{ i['total']|money }}</td>
+              <td><span class="pill pill-{{ i['status'] }}">{{ i['status']|capitalize }}</span></td>
+              <td class="right"><a class="link-btn" href="{{ url_for('admin_invoice_view', invoice_id=i['id']) }}">Open</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="empty">No invoices yet. <a href="{{ url_for('admin_invoice_new') }}">Create one</a>.</p>
+  {% endif %}
+</div>
+{% endblock %}

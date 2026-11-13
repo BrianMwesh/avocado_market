@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Invoice {{ invoice['invoice_no'] }} - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="wrap section doc-page">
+  <div class="doc-toolbar">
+    <a class="link-btn" href="{{ url_for('admin_invoices') if is_admin else url_for('account') }}">
+      &larr; {{ 'Back to invoices' if is_admin else 'Back to my account' }}
+    </a>
+    <div class="doc-tools">
+      <span class="pill pill-{{ invoice['status'] }}">{{ invoice['status']|capitalize }}</span>
+      <button class="ghost-btn small" type="button" onclick="window.print()">Print / Save PDF</button>
+      <a class="wa-btn small" target="_blank" rel="noopener"
+         href="{{ wa_link('Hello, about invoice ' ~ invoice['invoice_no'] ~ '...') }}">WhatsApp</a>
+    </div>
+  </div>
+
+  <div class="doc">
+    <div class="doc-head">
+      <div>
+        <h1 class="doc-title">INVOICE</h1>
+        <p class="muted">{{ site_name }}<br>Nairobi, Kenya<br>{{ contact_email }}<br>WhatsApp {{ whatsapp_display }}</p>
+      </div>
+      <div class="doc-meta">
+        <p><span>Invoice no.</span><strong>{{ invoice['invoice_no'] }}</strong></p>
+        <p><span>Date</span><strong>{{ invoice['created_at']|nice_date }}</strong></p>
+        <p><span>Due date</span><strong>{{ invoice['due_date']|nice_date }}</strong></p>
+        {% if invoice['quote_id'] %}<p><span>Quote ref</span><strong>#{{ invoice['quote_id'] }}</strong></p>{% endif %}
+      </div>
+    </div>
+
+    <div class="doc-parties">
+      <div>
+        <h4>Billed to</h4>
+        <p><strong>{{ invoice['full_name'] }}</strong>
+          {% if invoice['company'] %}<br>{{ invoice['company'] }}{% endif %}
+          <br>{{ invoice['email'] }}
+          {% if invoice['phone'] %}<br>{{ invoice['phone'] }}{% endif %}
+        </p>
+      </div>
+      <div>
+        <h4>Payment</h4>
+        <p class="muted">Pay by M-Pesa or bank transfer. Use the invoice number as the reference.
+          Send proof of payment on WhatsApp {{ whatsapp_display }}.</p>
+      </div>
+    </div>
+
+    <table class="doc-table">
+      <thead>
+        <tr><th>#</th><th>Description</th><th class="num">Qty (kg)</th><th class="num">Price / kg</th><th class="num">Amount</th></tr>
+      </thead>
+      <tbody>
+        {% for it in items %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ it['description'] }}</td>
+            <td class="num">{{ '%g'|format(it['quantity_kg']) }}</td>
+            <td class="num">{{ it['price_per_kg']|money }}</td>
+            <td class="num">{{ it['line_total']|money }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr><td colspan="4" class="num"><strong>Total due</strong></td><td class="num"><strong>{{ invoice['total']|money }}</strong></td></tr>
+      </tfoot>
+    </table>
+
+    {% if invoice['notes'] %}
+      <div class="doc-notes"><h4>Notes</h4><p>{{ invoice['notes'] }}</p></div>
+    {% endif %}
+
+    <div class="doc-terms">
+      <p><strong>Payment terms:</strong> Due on {{ invoice['due_date']|nice_date }}.
+        Goods remain the property of {{ site_name }} until payment is received in full.</p>
+      <p class="muted">Thank you for your business.</p>
+    </div>
+  </div>
+
+  {% if is_admin %}
+    <div class="admin-actions">
+      <form method="post" action="{{ url_for('admin_invoice_status', invoice_id=invoice['id']) }}">
+        <select name="status">
+          {% for s in ['unpaid','paid','cancelled'] %}
+            <option value="{{ s }}" {% if invoice['status'] == s %}selected{% endif %}>{{ s|capitalize }}</option>
+          {% endfor %}
+        </select>
+        <button class="ghost-btn small" type="submit">Update status</button>
+      </form>
+      <form method="post" action="{{ url_for('admin_invoice_delete', invoice_id=invoice['id']) }}"
+            onsubmit="return confirm('Delete this invoice?')">
+        <button class="danger-btn small" type="submit">Delete</button>
+      </form>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

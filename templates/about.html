@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}About us - {{ site_name }}{% endblock %}
+
+{% block content %}
+<section class="wrap section two-col">
+  <div>
+    <h1>About {{ site_name }}</h1>
+    <p>We are an avocado trading business based in Nairobi, buying from smallholder farms and packhouses
+      across Kenya's highlands and supplying retailers, hotels, juice processors, exporters and households.</p>
+    <p>Our model is simple: transparent prices per kilogram, fruit graded before it leaves the packhouse,
+      and delivery you can plan around. We started with weekly deliveries to groceries in Nairobi and now
+      move several tonnes a week across four counties.</p>
+    <h3>What we look for in every consignment</h3>
+    <ul class="ticks">
+      <li>Oil content of 10-12% at harvest, checked before dispatch</li>
+      <li>Firm fruit with clean skin and no bruising</li>
+      <li>Consistent sizing per carton so buyers can price confidently</li>
+      <li>Traceability: farm, harvest date and pack date on request</li>
+    </ul>
+  </div>
+  <img class="rounded" src="{{ url_for('static', filename='img/packhouse.jpg') }}" alt="Packhouse team sorting avocados">
+</section>
+
+<section class="band">
+  <div class="wrap band-inner">
+    <div class="band-text">
+      <h2>Talk to us before you order</h2>
+      <p>Volumes change daily during the season. Message us for today's availability, or request a formal
+        quote and we will send it to your account.</p>
+      <div class="hero-actions">
+        <a class="wa-btn" href="{{ wa_link('Hello, I would like to know today\'s avocado availability.') }}" target="_blank" rel="noopener">Chat on WhatsApp</a>
+        <a class="solid-btn" href="{{ url_for('contact') }}">Request a quote</a>
+      </div>
+    </div>
+    <img class="band-img" src="{{ url_for('static', filename='img/orchard.jpg') }}" alt="Avocado farm">
+  </div>
+</section>
+{% endblock %}

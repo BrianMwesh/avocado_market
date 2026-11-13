@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ site_name }} - Fresh Kenyan Avocados{% endblock %}</title>
+  <meta name="description" content="Buy fresh Hass, Fuerte and Jumbo avocados in Kenya. Farm-direct supply, priced per kilogram, delivery in Nairobi and countrywide.">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥑</text></svg>">
+</head>
+<body>
+<div class="topbar">
+  <div class="wrap topbar-inner">
+    <span>Farm-direct avocado supply from Murang'a, Kiambu, Meru &amp; Kisii</span>
+    <span class="topbar-links">
+      <a href="{{ url_for('contact') }}">Contact sales</a>
+      <span class="dot">|</span>
+      <a href="{{ wa_link('Hello, I would like to buy avocados in bulk.') }}" target="_blank" rel="noopener">WhatsApp {{ whatsapp_display }}</a>
+    </span>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="wrap header-main">
+    <a class="brand" href="{{ url_for('index') }}">
+      <span class="brand-mark">🥑</span>
+      <span class="brand-text">
+        <strong>Avocado Market</strong>
+        <small>KENYA</small>
+      </span>
+    </a>
+
+    <form class="search" action="{{ url_for('index') }}" method="get" role="search">
+      <input type="search" name="q" placeholder="Search Hass, Fuerte, Jumbo, organic supply..." value="{{ request.args.get('q','') }}" aria-label="Search products">
+      <button type="submit" aria-label="Search">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M10 4a6 6 0 104.47 10L20 19.5 21.5 18l-5.5-5.5A6 6 0 0010 4zm0 2a4 4 0 110 8 4 4 0 010-8z" fill="currentColor"/></svg>
+      </button>
+    </form>
+
+    <div class="header-actions">
+      {% if current_user %}
+        <a class="ghost-btn" href="{{ url_for('account') }}">
+          <span class="avatar">{{ current_user['full_name'][:1]|upper }}</span>
+          <span class="stacked"><small>Account</small><strong>{{ current_user['full_name'].split(' ')[0] }}</strong></span>
+        </a>
+        {% if current_user['is_admin'] %}
+          <a class="ghost-btn" href="{{ url_for('admin_dashboard') }}">Admin</a>
+        {% endif %}
+        <a class="link-btn" href="{{ url_for('logout') }}">Sign out</a>
+      {% else %}
+        <a class="ghost-btn" href="{{ url_for('login') }}">Sign in</a>
+        <a class="solid-btn small" href="{{ url_for('signup') }}">Register</a>
+      {% endif %}
+      <a class="wa-btn small" href="{{ wa_link('Hello, I would like to order avocados.') }}" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 2a9.9 9.9 0 00-8.5 15L2 22l5.2-1.4A10 10 0 1012 2zm0 2a8 8 0 016.7 12.4l-.3.4.7 2.6-2.7-.7-.4.2A8 8 0 116 6.6 8 8 0 0112 4zm-3 4c-.3 0-.6.1-.8.4-.3.4-.9 1-.9 2s.7 2 1 2.4c.4.5 1.4 2.1 3.5 2.9 1.7.6 2.1.5 2.5.5s1.3-.5 1.5-1c.2-.6.2-1 .1-1.1l-1.6-.8c-.2-.1-.4 0-.6.2l-.6.7c-.1.1-.2.1-.3.1a6 6 0 01-1.8-1.1 6.6 6.6 0 01-1.2-1.5c-.1-.2 0-.3.1-.4l.5-.6c.1-.2.1-.3 0-.5l-.7-1.7c-.2-.4-.3-.4-.5-.4H9z" fill="currentColor"/></svg>
+        Order on WhatsApp
+      </a>
+    </div>
+  </div>
+
+  <nav class="catbar">
+    <div class="wrap catbar-inner">
+      <a href="{{ url_for('index') }}">All products</a>
+      <a href="{{ url_for('index', variety='Hass') }}">Hass</a>
+      <a href="{{ url_for('index', variety='Fuerte') }}">Fuerte</a>
+      <a href="{{ url_for('index', variety='Jumbo') }}">Jumbo</a>
+      <a href="{{ url_for('index', variety='Pinkerton') }}">Pinkerton</a>
+      <a href="{{ url_for('index', q='organic') }}">Organic</a>
+      <a href="{{ url_for('about') }}">About us</a>
+      <a href="{{ url_for('contact') }}">Request a quote</a>
+    </div>
+  </nav>
+</header>
+
+{% with msgs = get_flashed_messages(with_categories=true) %}
+  {% if msgs %}
+    <div class="wrap flash-wrap">
+      {% for cat, msg in msgs %}
+        <div class="flash flash-{{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<main>
+{% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <h4>{{ site_name }}</h4>
+      <p>Fresh avocados sourced directly from smallholder farms and packhouses in Kenya's highlands. Priced per kilogram, graded and packed to order.</p>
+      <p class="muted">Nairobi, Kenya &middot; Mon-Sat, 7:00 AM - 6:00 PM</p>
+    </div>
+    <div>
+      <h4>Buy</h4>
+      <a href="{{ url_for('index', variety='Hass') }}">Hass avocado</a>
+      <a href="{{ url_for('index', variety='Fuerte') }}">Fuerte avocado</a>
+      <a href="{{ url_for('index', variety='Jumbo') }}">Jumbo avocado</a>
+      <a href="{{ url_for('index', q='organic') }}">Organic supply</a>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <a href="{{ url_for('about') }}">About us</a>
+      <a href="{{ url_for('contact') }}">Contact</a>
+      <a href="{{ url_for('login') }}">Buyer sign in</a>
+      <a href="{{ url_for('signup') }}">Create account</a>
+      <a href="{{ url_for('admin_login') }}">Admin sign in</a>
+    </div>
+    <div>
+      <h4>Talk to sales</h4>
+      <a href="{{ wa_link('Hello, I would like to enquire about avocado supply.') }}" target="_blank" rel="noopener">WhatsApp {{ whatsapp_display }}</a>
+      <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>
+      <p class="muted">Quotes and invoices are issued to registered buyers and appear in your account.</p>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    <span>&copy; {{ now.year }} {{ site_name }}. All rights reserved.</span>
+    <span>Prices in Kenyan Shillings (KES) per kilogram.</span>
+  </div>
+</footer>
+
+<a class="wa-float" href="{{ wa_link('Hello, I found you online and I would like to buy avocados.') }}" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 2a9.9 9.9 0 00-8.5 15L2 22l5.2-1.4A10 10 0 1012 2zm0 2a8 8 0 016.7 12.4l-.3.4.7 2.6-2.7-.7-.4.2A8 8 0 116 6.6 8 8 0 0112 4zm-3 4c-.3 0-.6.1-.8.4-.3.4-.9 1-.9 2s.7 2 1 2.4c.4.5 1.4 2.1 3.5 2.9 1.7.6 2.1.5 2.5.5s1.3-.5 1.5-1c.2-.6.2-1 .1-1.1l-1.6-.8c-.2-.1-.4 0-.6.2l-.6.7c-.1.1-.2.1-.3.1a6 6 0 01-1.8-1.1 6.6 6.6 0 01-1.2-1.5c-.1-.2 0-.3.1-.4l.5-.6c.1-.2.1-.3 0-.5l-.7-1.7c-.2-.4-.3-.4-.5-.4H9z" fill="currentColor"/></svg>
+</a>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

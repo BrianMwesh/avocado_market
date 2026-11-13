@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ code }} - {{ site_name }}{% endblock %}
+
+{% block content %}
+<section class="wrap section">
+  <div class="error-page">
+    <h1>{{ code }}</h1>
+    <p>{{ message }}</p>
+    <a class="solid-btn" href="{{ url_for('index') }}">Back to store</a>
+  </div>
+</section>
+{% endblock %}

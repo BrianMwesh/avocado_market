@@ -1,0 +1,96 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}New invoice{% endblock %}
+{% block admin_heading %}New invoice{% endblock %}
+{% block admin_actions %}
+  <a class="ghost-btn small" href="{{ url_for('admin_invoices') }}">Back to invoices</a>
+{% endblock %}
+
+{% block admin_content %}
+<form method="post" class="panel doc-form">
+  <div class="form-grid">
+    <div>
+      <label for="user_id">Customer</label>
+      <select id="user_id" name="user_id" required>
+        <option value="">Select a registered buyer…</option>
+        {% for c in customers %}
+          <option value="{{ c['id'] }}">{{ c['full_name'] }} - {{ c['email'] }}{% if c['company'] %} ({{ c['company'] }}){% endif %}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="due_date">Payment due date</label>
+      <input id="due_date" type="date" name="due_date" value="{{ default_due_date }}">
+    </div>
+  </div>
+
+  <h3 class="form-section">Line items</h3>
+  <div class="items-editor" data-editor>
+    <table class="data items-table">
+      <thead>
+        <tr><th style="width:26%">Product</th><th>Description</th><th class="num" style="width:12%">Qty (kg)</th>
+            <th class="num" style="width:14%">Price / kg</th><th class="num" style="width:15%">Amount</th><th></th></tr>
+      </thead>
+      <tbody data-rows>
+        <tr>
+          <td>
+            <select name="product_id" class="js-product">
+              <option value="">-</option>
+              {% for p in products %}
+                <option value="{{ p['id'] }}" data-price="{{ p['price_per_kg'] }}" data-name="{{ p['name'] }}">{{ p['name'] }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td><input name="description" value=""></td>
+          <td class="num"><input name="quantity_kg" type="number" step="0.01" min="0" class="js-qty" value=""></td>
+          <td class="num"><input name="price_per_kg" type="number" step="0.01" min="0" class="js-price" value=""></td>
+          <td class="num js-amount">KES 0.00</td>
+          <td class="right"><button type="button" class="link-btn danger js-remove">Remove</button></td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="4" class="num"><strong>Invoice total</strong></td>
+          <td class="num"><strong class="js-total">KES 0.00</strong></td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <template data-row-template>
+      <tr>
+        <td>
+          <select name="product_id" class="js-product">
+            <option value="">-</option>
+            {% for p in products %}
+              <option value="{{ p['id'] }}" data-price="{{ p['price_per_kg'] }}" data-name="{{ p['name'] }}">{{ p['name'] }}</option>
+            {% endfor %}
+          </select>
+        </td>
+        <td><input name="description" value=""></td>
+        <td class="num"><input name="quantity_kg" type="number" step="0.01" min="0" class="js-qty" value=""></td>
+        <td class="num"><input name="price_per_kg" type="number" step="0.01" min="0" class="js-price" value=""></td>
+        <td class="num js-amount">KES 0.00</td>
+        <td class="right"><button type="button" class="link-btn danger js-remove">Remove</button></td>
+      </tr>
+    </template>
+
+    <button type="button" class="ghost-btn small" data-add-row>+ Add line item</button>
+  </div>
+
+  <div class="form-grid" style="margin-top:18px">
+    <div class="full">
+      <label for="notes">Notes (payment instructions, delivery)</label>
+      <textarea id="notes" name="notes" rows="3"></textarea>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="solid-btn" type="submit">Create invoice</button>
+    <a class="link-btn" href="{{ url_for('admin_invoices') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/items.js') }}"></script>
+{% endblock %}

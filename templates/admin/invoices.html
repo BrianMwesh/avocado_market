@@ -1,0 +1,36 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Invoices{% endblock %}
+{% block admin_heading %}Invoices{% endblock %}
+{% block admin_actions %}
+  <a class="solid-btn small" href="{{ url_for('admin_invoice_new') }}">New invoice</a>
+{% endblock %}
+
+{% block admin_content %}
+<div class="panel">
+  {% if invoices %}
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr><th>Invoice</th><th>Buyer</th><th>Issued</th><th>Due</th>
+              <th class="num">Total</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for i in invoices %}
+            <tr>
+              <td><strong>{{ i['invoice_no'] }}</strong>{% if i['quote_id'] %}<br><span class="muted small">from quote</span>{% endif %}</td>
+              <td>{{ i['full_name'] }}{% if i['company'] %}<br><span class="muted small">{{ i['company'] }}</span>{% endif %}</td>
+              <td>{{ i['created_at']|nice_date }}</td>
+              <td>{{ i['due_date']|nice_date }}</td>
+              <td class="num money">{{ i['total']|money }}</td>
+              <td><span class="pill pill-{{ i['status'] }}">{{ i['status']|capitalize }}</span></td>
+              <td class="right"><a class="link-btn" href="{{ url_for('admin_invoice_view', invoice_id=i['id']) }}">Open</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="empty">No invoices yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

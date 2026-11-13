@@ -1,0 +1,36 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Quotes{% endblock %}
+{% block admin_heading %}Quotes{% endblock %}
+{% block admin_actions %}
+  <a class="solid-btn small" href="{{ url_for('admin_quote_new') }}">New quote</a>
+{% endblock %}
+
+{% block admin_content %}
+<div class="panel">
+  {% if quotes %}
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr><th>Quote</th><th>Buyer</th><th>Issued</th><th>Valid until</th>
+              <th class="num">Total</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for q in quotes %}
+            <tr>
+              <td><strong>{{ q['quote_no'] }}</strong></td>
+              <td>{{ q['full_name'] }}{% if q['company'] %}<br><span class="muted small">{{ q['company'] }}</span>{% endif %}</td>
+              <td>{{ q['created_at']|nice_date }}</td>
+              <td>{{ q['valid_until']|nice_date }}</td>
+              <td class="num money">{{ q['total']|money }}</td>
+              <td><span class="pill pill-{{ q['status'] }}">{{ q['status']|capitalize }}</span></td>
+              <td class="right"><a class="link-btn" href="{{ url_for('admin_quote_view', quote_id=q['id']) }}">Open</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="empty">No quotes yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

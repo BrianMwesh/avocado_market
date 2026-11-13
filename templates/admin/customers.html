@@ -1,0 +1,33 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Customers{% endblock %}
+{% block admin_heading %}Customers{% endblock %}
+
+{% block admin_content %}
+<div class="panel">
+  {% if customers %}
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr><th>Name</th><th>Email</th><th>Phone</th><th>Company</th>
+              <th class="num">Quotes</th><th class="num">Invoices</th><th>Joined</th></tr>
+        </thead>
+        <tbody>
+          {% for c in customers %}
+            <tr>
+              <td><strong>{{ c['full_name'] }}</strong></td>
+              <td>{{ c['email'] }}</td>
+              <td>{{ c['phone'] or '-' }}</td>
+              <td>{{ c['company'] or '-' }}</td>
+              <td class="num">{{ c['quote_count'] }}</td>
+              <td class="num">{{ c['invoice_count'] }}</td>
+              <td>{{ c['created_at']|nice_date }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="empty">No registered buyers yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

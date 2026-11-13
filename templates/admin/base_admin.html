@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{% block admin_title %}Admin{% endblock %} - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="wrap admin-layout">
+  <aside class="admin-side">
+    <h3>Admin panel</h3>
+    <a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">Dashboard</a>
+    <a href="{{ url_for('admin_products') }}" class="{% if request.endpoint in ['admin_products','admin_product_new','admin_product_edit'] %}active{% endif %}">Products</a>
+    <a href="{{ url_for('admin_quotes') }}" class="{% if request.endpoint in ['admin_quotes','admin_quote_new','admin_quote_view','admin_quote_edit'] %}active{% endif %}">Quotes</a>
+    <a href="{{ url_for('admin_invoices') }}" class="{% if request.endpoint in ['admin_invoices','admin_invoice_new','admin_invoice_view'] %}active{% endif %}">Invoices</a>
+    <a href="{{ url_for('admin_customers') }}" class="{% if request.endpoint == 'admin_customers' %}active{% endif %}">Customers</a>
+    <hr>
+    <a href="{{ url_for('index') }}">View storefront &rarr;</a>
+  </aside>
+
+  <section class="admin-main">
+    <div class="admin-head">
+      <h1>{% block admin_heading %}Dashboard{% endblock %}</h1>
+      {% block admin_actions %}{% endblock %}
+    </div>
+    {% block admin_content %}{% endblock %}
+  </section>
+</div>
+{% endblock %}

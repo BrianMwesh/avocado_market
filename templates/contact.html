@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Contact &amp; quotes - {{ site_name }}{% endblock %}
+
+{% block content %}
+<section class="wrap section two-col">
+  <div>
+    <h1>Contact our sales team</h1>
+    <p class="muted">Tell us the variety, quantity in kilograms and delivery point. We reply within business hours.</p>
+    <form method="post" class="stack card-form">
+      <label for="name">Your name</label>
+      <input id="name" type="text" name="name" required>
+      <label for="email">Email</label>
+      <input id="email" type="email" name="email" required>
+      <label for="phone">Phone / WhatsApp</label>
+      <input id="phone" type="tel" name="phone">
+      <label for="body">What do you need?</label>
+      <textarea id="body" name="body" rows="4" placeholder="e.g. 200 kg Hass Grade A for delivery to Westlands on Friday"></textarea>
+      <button class="solid-btn" type="submit">Send enquiry</button>
+    </form>
+  </div>
+
+  <div class="contact-side">
+    <div class="panel">
+      <h3>Fastest route</h3>
+      <p>WhatsApp is where we confirm stock, prices and delivery slots.</p>
+      <a class="wa-btn" href="{{ wa_link('Hello, I would like to enquire about avocado supply.') }}" target="_blank" rel="noopener">WhatsApp {{ whatsapp_display }}</a>
+      <p class="muted small">Mon - Sat, 7:00 AM to 6:00 PM</p>
+    </div>
+    <div class="panel">
+      <h3>Registered buyers</h3>
+      <p>Prefer paperwork? Create an account and your quotes and invoices will be stored there for reference and printing.</p>
+      <a class="ghost-btn small" href="{{ url_for('signup') }}">Create buyer account</a>
+    </div>
+    <div class="panel">
+      <h3>Email</h3>
+      <p><a href="mailto:{{ contact_email }}">{{ contact_email }}</a></p>
+      <p class="muted small">For purchase orders, LPOs and delivery schedules.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Quote {{ quote['quote_no'] }} - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="wrap section doc-page">
+  <div class="doc-toolbar">
+    <a class="link-btn" href="{{ url_for('admin_quotes') if is_admin else url_for('account') }}">
+      &larr; {{ 'Back to quotes' if is_admin else 'Back to my account' }}
+    </a>
+    <div class="doc-tools">
+      <span class="pill pill-{{ quote['status'] }}">{{ quote['status']|capitalize }}</span>
+      <button class="ghost-btn small" type="button" onclick="window.print()">Print / Save PDF</button>
+      <a class="wa-btn small" target="_blank" rel="noopener"
+         href="{{ wa_link('Hello, about quote ' ~ quote['quote_no'] ~ '...') }}">WhatsApp</a>
+    </div>
+  </div>
+
+  <div class="doc">
+    <div class="doc-head">
+      <div>
+        <h1 class="doc-title">QUOTATION</h1>
+        <p class="muted">{{ site_name }}<br>Nairobi, Kenya<br>{{ contact_email }}<br>WhatsApp {{ whatsapp_display }}</p>
+      </div>
+      <div class="doc-meta">
+        <p><span>Quote no.</span><strong>{{ quote['quote_no'] }}</strong></p>
+        <p><span>Date</span><strong>{{ quote['created_at']|nice_date }}</strong></p>
+        <p><span>Valid until</span><strong>{{ quote['valid_until']|nice_date }}</strong></p>
+      </div>
+    </div>
+
+    <div class="doc-parties">
+      <div>
+        <h4>Quoted to</h4>
+        <p><strong>{{ quote['full_name'] }}</strong>
+          {% if quote['company'] %}<br>{{ quote['company'] }}{% endif %}
+          <br>{{ quote['email'] }}
+          {% if quote['phone'] %}<br>{{ quote['phone'] }}{% endif %}
+        </p>
+      </div>
+      <div>
+        <h4>Supply details</h4>
+        <p class="muted">Prices in Kenyan Shillings (KES) per kilogram. Quantities in kilograms.
+          Delivery within Nairobi in 24 hours; countrywide courier 1-3 days.</p>
+      </div>
+    </div>
+
+    <table class="doc-table">
+      <thead>
+        <tr><th>#</th><th>Description</th><th class="num">Qty (kg)</th><th class="num">Price / kg</th><th class="num">Amount</th></tr>
+      </thead>
+      <tbody>
+        {% for it in items %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ it['description'] }}</td>
+            <td class="num">{{ '%g'|format(it['quantity_kg']) }}</td>
+            <td class="num">{{ it['price_per_kg']|money }}</td>
+            <td class="num">{{ it['line_total']|money }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr><td colspan="4" class="num"><strong>Total</strong></td><td class="num"><strong>{{ quote['total']|money }}</strong></td></tr>
+      </tfoot>
+    </table>
+
+    {% if quote['notes'] %}
+      <div class="doc-notes"><h4>Notes</h4><p>{{ quote['notes'] }}</p></div>
+    {% endif %}
+
+    <div class="doc-terms">
+      <p><strong>Terms:</strong> This quotation is valid until {{ quote['valid_until']|nice_date }}.
+        Prices may change with market rates after that date. Confirm by WhatsApp on {{ whatsapp_display }}
+        or reply to {{ contact_email }}. An invoice is issued once the order is confirmed.</p>
+      <p class="muted">Thank you for buying Kenyan avocados.</p>
+    </div>
+  </div>
+
+  {% if is_admin %}
+    <div class="admin-actions">
+      <form method="post" action="{{ url_for('admin_quote_status', quote_id=quote['id']) }}">
+        <select name="status">
+          {% for s in ['requested','sent','accepted','declined'] %}
+            <option value="{{ s }}" {% if quote['status'] == s %}selected{% endif %}>{{ s|capitalize }}</option>
+          {% endfor %}
+        </select>
+        <button class="ghost-btn small" type="submit">Update status</button>
+      </form>
+      <a class="ghost-btn small" href="{{ url_for('admin_quote_edit', quote_id=quote['id']) }}">Edit quote</a>
+      <form method="post" action="{{ url_for('admin_quote_to_invoice', quote_id=quote['id']) }}">
+        <input type="date" name="due_date" aria-label="Invoice due date">
+        <button class="solid-btn small" type="submit">Convert to invoice</button>
+      </form>
+      <form method="post" action="{{ url_for('admin_quote_delete', quote_id=quote['id']) }}"
+            onsubmit="return confirm('Delete this quote?')">
+        <button class="danger-btn small" type="submit">Delete</button>
+      </form>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}{{ 'Edit product' if product else 'New product' }}{% endblock %}
+{% block admin_heading %}{{ 'Edit product' if product else 'Add product' }}{% endblock %}
+{% block admin_actions %}
+  <a class="ghost-btn small" href="{{ url_for('admin_products') }}">Back to products</a>
+{% endblock %}
+
+{% block admin_content %}
+<div class="panel">
+  <form method="post" class="form-grid">
+    <div class="full">
+      <label for="name">Product name</label>
+      <input id="name" name="name" required value="{{ product['name'] if product else '' }}"
+             placeholder="e.g. Hass Avocado - Grade A">
+    </div>
+
+    <div>
+      <label for="variety">Variety</label>
+      <input id="variety" name="variety" value="{{ product['variety'] if product else '' }}" placeholder="Hass">
+    </div>
+    <div>
+      <label for="grade">Grade</label>
+      <input id="grade" name="grade" value="{{ product['grade'] if product else '' }}" placeholder="Grade A / Export">
+    </div>
+
+    <div>
+      <label for="price_per_kg">Price per kg (KES)</label>
+      <input id="price_per_kg" name="price_per_kg" type="number" step="0.01" min="0" required
+             value="{{ product['price_per_kg'] if product else '' }}">
+    </div>
+    <div>
+      <label for="moq_kg">Minimum order (kg)</label>
+      <input id="moq_kg" name="moq_kg" type="number" step="1" min="1"
+             value="{{ product['moq_kg'] if product else 20 }}">
+    </div>
+
+    <div>
+      <label for="stock_kg">Stock available (kg)</label>
+      <input id="stock_kg" name="stock_kg" type="number" step="1" min="0"
+             value="{{ product['stock_kg'] if product else 0 }}">
+    </div>
+    <div>
+      <label for="origin">Origin / county</label>
+      <input id="origin" name="origin" value="{{ product['origin'] if product else '' }}" placeholder="Murang'a">
+    </div>
+
+    <div>
+      <label for="packaging">Packaging</label>
+      <input id="packaging" name="packaging" value="{{ product['packaging'] if product else '' }}"
+             placeholder="10kg vented cartons">
+    </div>
+    <div>
+      <label for="image">Photo file (in static/img)</label>
+      <select id="image" name="image">
+        {% for img in ['hass.jpg','fuerte.jpg','orchard.jpg','packhouse.jpg'] %}
+          <option value="{{ img }}" {% if product and product['image'] == img %}selected{% endif %}>{{ img }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="full">
+      <label for="description">Description</label>
+      <textarea id="description" name="description" rows="5"
+                placeholder="Sizing, oil content, shelf life, who it suits">{{ product['description'] if product else '' }}</textarea>
+    </div>
+
+    <div class="full checkbox">
+      <label><input type="checkbox" name="active" {% if not product or product['active'] %}checked{% endif %}>
+        Show this product on the storefront</label>
+    </div>
+
+    <div class="full form-actions">
+      <button class="solid-btn" type="submit">Save product</button>
+      <a class="link-btn" href="{{ url_for('admin_products') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}My account - {{ site_name }}{% endblock %}
+
+{% block content %}
+<section class="wrap section">
+  <div class="account-head">
+    <div>
+      <h1>My account</h1>
+      <p class="muted">{{ current_user['full_name'] }} &middot; {{ current_user['email'] }}
+        {% if current_user['company'] %} &middot; {{ current_user['company'] }}{% endif %}</p>
+    </div>
+    {% if current_user['is_admin'] %}
+      <a class="solid-btn small" href="{{ url_for('admin_dashboard') }}">Open admin panel</a>
+    {% endif %}
+  </div>
+
+  <div class="stat-row">
+    <div class="stat"><span class="stat-label">Quotes</span><strong>{{ quotes|length }}</strong></div>
+    <div class="stat"><span class="stat-label">Invoices</span><strong>{{ invoices|length }}</strong></div>
+    <div class="stat"><span class="stat-label">Unpaid</span>
+      <strong>{{ invoices|selectattr('status','equalto','unpaid')|list|length }}</strong></div>
+    <div class="stat"><span class="stat-label">Total billed</span>
+      <strong class="money">{{ invoices|sum(attribute='total')|money }}</strong></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h2>My quotes</h2>
+      <span class="muted small">Quotes issued to you by our sales team</span>
+    </div>
+    {% if quotes %}
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr><th>Quote no.</th><th>Date</th><th>Items</th><th>Valid until</th><th>Total</th><th>Status</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for q in quotes %}
+              <tr>
+                <td><strong>{{ q['quote_no'] }}</strong></td>
+                <td>{{ q['created_at']|nice_date }}</td>
+                <td>{{ q['items'] }}</td>
+                <td>{{ q['valid_until']|nice_date }}</td>
+                <td class="money">{{ q['total']|money }}</td>
+                <td><span class="pill pill-{{ q['status'] }}">{{ q['status']|capitalize }}</span></td>
+                <td class="right"><a class="link-btn" href="{{ url_for('view_quote', quote_id=q['id']) }}">View</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="empty">No quotes yet. <a href="{{ url_for('index') }}">Browse supply</a> and request a quote.</p>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h2>My invoices</h2>
+      <span class="muted small">Invoices issued to you, including payment status</span>
+    </div>
+    {% if invoices %}
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr><th>Invoice no.</th><th>Date</th><th>Items</th><th>Due date</th><th>Total</th><th>Status</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for i in invoices %}
+              <tr>
+                <td><strong>{{ i['invoice_no'] }}</strong></td>
+                <td>{{ i['created_at']|nice_date }}</td>
+                <td>{{ i['items'] }}</td>
+                <td>{{ i['due_date']|nice_date }}</td>
+                <td class="money">{{ i['total']|money }}</td>
+                <td><span class="pill pill-{{ i['status'] }}">{{ i['status']|capitalize }}</span></td>
+                <td class="right"><a class="link-btn" href="{{ url_for('view_invoice', invoice_id=i['id']) }}">View</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="empty">No invoices yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="help-strip">
+    <p><strong>Need help with an order?</strong> Message us on WhatsApp and quote your document number.</p>
+    <a class="wa-btn small" href="{{ wa_link('Hello, I need help with my avocado order.') }}" target="_blank" rel="noopener">WhatsApp us</a>
+  </div>
+</section>
+{% endblock %}
